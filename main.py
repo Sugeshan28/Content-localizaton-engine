@@ -4,7 +4,8 @@ from text_to_lan import TextToLan
 from textlan_to_audio import TextlanToAudio
 import os
 from datetime import datetime
-from flask import url_for,render_template,Flask,request
+from flask import url_for,render_template,Flask,request,send_from_directory
+from flask import jsonify
 from werkzeug.utils import secure_filename
 
 #FUNCTION FOR LATEST AUDIO
@@ -67,13 +68,15 @@ def index():
 
 title = None
 description = None
+filename_name = None
 
 @app.route("/", methods=['POST'])
 def upload():
-    global title,description
+    
     if 'videoFile' not in request.files:
         return "No file part"
     file = request.files['videoFile']
+    filename_name = file
     if file.filename == '':
         return "No selected file"
 
@@ -96,7 +99,11 @@ def upload():
     audiofromvideo(f"{VIDEO_FOLDER}/{filename}")
     textlantoaudio(texttolanguage(texttoaudio()))
 
+    return render_template("lmsview.html")
 
+@app.route('/display/<filename>')
+def viewcontent(filename):
+    return send_from_directory(f"{VIDEO_FOLDER}/{filename_name}", filename_name)
 
 if __name__ == "__main__":
     app.run(debug=True)

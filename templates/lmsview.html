@@ -83,10 +83,11 @@
             </div>
             <div class="video-wrapper">
               <!-- Demo video element; replace src with your real video -->
-              <video id="lessonVideo" class="lesson-video" controls poster="https://via.placeholder.com/1280x720.png?text=LMS+Video">
-                <source src="" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <video id="lessonVideo" class="lesson-video" controls poster="/static/images/placeholder.png">
+    <!-- Jinja2 logic: "Go to the display_video function and get this specific filename" -->
+                <!-- This generates the URL: /display/my_movie.mp4 -->
+                    <source src="{{ url_for('viewcontent', filename=filename) }}" type="video/mp4">
+            </video>
             </div>
             <div class="video-meta">
               <p id="videoTitle" class="video-title">What is Machine Learning?</p>
