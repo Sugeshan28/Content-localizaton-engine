@@ -35,9 +35,9 @@ AUDIO_FOLDER = os.path.join(BASE_DIR, 'db', 'audio')
 os.makedirs(VIDEO_FOLDER, exist_ok=True)
 os.makedirs(AUDIO_FOLDER, exist_ok=True)
 
-def audiofromvideo():
+def audiofromvideo(Videofolder):
     #AUDIOFROMVIDEO
-    ext_audio = AudioFromVideo(VIDEO_FOLDER,AUDIO_FOLDER)
+    ext_audio = AudioFromVideo(Videofolder,AUDIO_FOLDER)
     audio_input = ext_audio.extracting_audio()
     return audio_input
 
@@ -50,12 +50,13 @@ def texttoaudio():
 
 def texttolanguage(ext_text):
     #TEXT TO LANGUAGE
-    source_lan = TextToLan(ext_text.text)
+    source_lan = TextToLan(ext_text)
     translated_text = source_lan.eng_to_tamil()
     print(translated_text)
+    return source_lan.output_text
 
 def textlantoaudio(source_lan):
-    to_audio = TextlanToAudio(source_lan.output_text)
+    to_audio = TextlanToAudio(source_lan)
     to_audio.tamil_audio_conv(recent_audio())
 
 app = Flask(__name__)
@@ -82,8 +83,7 @@ def upload():
     #initiating flow
 
     audiofromvideo(f"{VIDEO_FOLDER}/{filename}")
-    texttolanguage(texttoaudio())
-    textlantoaudio()
+    textlantoaudio(texttolanguage(texttoaudio()))
 
 if __name__ == "__main__":
     app.run(debug=True)
