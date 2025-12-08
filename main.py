@@ -38,7 +38,7 @@ os.makedirs(AUDIO_FOLDER, exist_ok=True)
 def audiofromvideo(Videofolder):
     #AUDIOFROMVIDEO
     ext_audio = AudioFromVideo(Videofolder,AUDIO_FOLDER)
-    audio_input = ext_audio.extracting_audio()
+    audio_input = ext_audio.extracting_audio_eng()
     return audio_input
 
 def texttoaudio():
@@ -65,14 +65,15 @@ app = Flask(__name__)
 def index():
     return render_template('upload.html')
 
+title = None
+description = None
+
 @app.route("/", methods=['POST'])
 def upload():
-
+    global title,description
     if 'videoFile' not in request.files:
         return "No file part"
-    
     file = request.files['videoFile']
-
     if file.filename == '':
         return "No selected file"
 
@@ -80,8 +81,18 @@ def upload():
         filename = secure_filename(file.filename)
         file.save(os.path.join(VIDEO_FOLDER,filename))
         print(f"Success! Video saved to: {VIDEO_FOLDER}/{filename}")
-    #initiating flow
 
+    #getting title
+    title_name = request.form.get('title')  
+    title = title_name
+
+    description_title = request.form.get('description')
+    description = description_title
+
+    print(f"the title {title}")
+    print(f"the description {description}")
+
+    #initiating flow
     audiofromvideo(f"{VIDEO_FOLDER}/{filename}")
     textlantoaudio(texttolanguage(texttoaudio()))
 
