@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Viewer - LMS</title>
+<!-- Link to the external CSS file -->
+<link rel="stylesheet" href="./template/css/content.css">
+</head>
+<body>
+<div class="container">
+<div class="main-content">
+<!-- Title and Description (Fetched from API via Flask) -->
+<h1>SIH 2025 Project: Front-end Design</h1>
+<p>This is the detailed description of the project content, fetched dynamically from your LMS API. It explains the video, its learning objectives, and prerequisite knowledge.</p>
+
+        <!-- Video Player -->
+        <div class="video-wrapper">
+            <!-- 
+                Flask/Jinja will replace the 'src' and 'track' attributes with API data.
+                Example: <source src="{{ video_url }}" type="video/mp4">
+            -->
+            <video controls crossorigin="anonymous" poster="placeholder_image.jpg">
+                <!-- Example video source (replace with API data) -->
+                <source src="https://lms.com/api/video/SIH2025.mp4" type="video/mp4">
+                
+                <!-- Subtitle Track (SRT/VTT fetched from API) -->
+                <track kind="subtitles" label="English" src="https://lms.com/api/srt/SIH2025_en.vtt" srclang="en" default>
+                <track kind="subtitles" label="Tamil" src="https://lms.com/api/srt/SIH2025_ta.vtt" srclang="ta">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        
+    </div>
+    
+    <div class="sidebar">
+        <h3>Additional Files</h3>
+        <p>Downloadable resources related to this content.</p>
+        
+        <!-- Files fetched from API -->
+        <a href="https://lms.com/api/file/Assessment_Quiz.pdf" target="_blank" class="file-link">
+            📄 Download Quiz (PDF)
+        </a>
+        <a href="https://lms.com/api/file/Lecture_Slides.pptx" target="_blank" class="file-link">
+            📊 Download Lecture Slides (PPTX)
+        </a>
+        <a href="https://lms.com/api/file/Code_Snippets.zip" target="_blank" class="file-link">
+            💾 Download Code Snippets (ZIP)
+        </a>
+        
+        <!-- Link to the online quiz/assessment -->
+        <a href="/quiz/123" class="file-link assessment-link">
+            🚀 Start Online Assessment
+        </a>
+    </div>
+</div>
+
+
+</body>
+</html>
