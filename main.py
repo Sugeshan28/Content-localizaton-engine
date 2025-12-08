@@ -2,6 +2,7 @@ from audio_from_video import AudioFromVideo
 from text_from_audio import TextFromAudio
 from text_to_lan import TextToLan
 from textlan_to_audio import TextlanToAudio
+from merge_audio_video import merge_video_with_translated_audio
 import os
 from datetime import datetime
 from flask import url_for, render_template, Flask, request, send_from_directory, redirect
@@ -10,6 +11,7 @@ from werkzeug.utils import secure_filename
 # Configuration
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 VIDEO_FOLDER = os.path.join(BASE_DIR, 'db', 'video')
+VIDEO_OUTPUT_FOLDER = os.path.join(BASE_DIR, 'db', 'video_output')
 AUDIO_FOLDER = os.path.join(BASE_DIR, 'db', 'audio')
 AUDIO_ENG_FOLDER = os.path.join(AUDIO_FOLDER, 'eng_audio')
 AUDIO_OUTPUT_FOLDER = os.path.join(AUDIO_FOLDER, 'output_au')
@@ -19,6 +21,7 @@ TEXT_OUTPUT_FOLDER = os.path.join(TEXT_FOLDER, 'output_text')
 
 # Create all necessary directories
 os.makedirs(VIDEO_FOLDER, exist_ok=True)
+os.makedirs(VIDEO_OUTPUT_FOLDER, exist_ok=True)
 os.makedirs(AUDIO_ENG_FOLDER, exist_ok=True)
 os.makedirs(AUDIO_OUTPUT_FOLDER, exist_ok=True)
 os.makedirs(TEXT_ENG_FOLDER, exist_ok=True)
@@ -26,6 +29,7 @@ os.makedirs(TEXT_OUTPUT_FOLDER, exist_ok=True)
 
 # Global variables to store current session data
 current_video_filename = None
+current_merged_video_filename = None
 current_title = None
 current_description = None
 current_source_lang = "en"
@@ -46,15 +50,14 @@ def recent_audio(audio_path=AUDIO_ENG_FOLDER):
     print(f"Most recent audio: {name}")
     return name
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         return upload()
     return render_template('upload.html')
 
-@app.route("/upload", methods=['POST'])
 def upload():
-    global current_video_filename, current_title, current_description, current_source_lang, current_target_lang
+    global current_video_filename, current_merged_video_filename, current_title, current_description, current_source_lang, current_target_lang
 
     if 'videoFile' not in request.files:
         return "No file part", 400
@@ -117,8 +120,16 @@ def upload():
             # Step 4: Convert translated text to audio
             print(f"\n=== Step 4: Converting text to audio ===")
             to_audio = TextlanToAudio(translated_text, current_target_lang)
-            to_audio.tamil_audio_conv(AUDIO_OUTPUT_FOLDER)
+            translated_audio_path = to_audio.tamil_audio_conv(AUDIO_OUTPUT_FOLDER)
             print("Audio generation completed")
+
+            # Step 5: Merge video with translated audio
+            print(f"\n=== Step 5: Merging video with translated audio ===")
+            merged_filename = f"merged_{os.path.splitext(filename)[0]}_{current_target_lang}.mp4"
+            merged_video_path = os.path.join(VIDEO_OUTPUT_FOLDER, merged_filename)
+
+            merge_video_with_translated_audio(video_path, translated_audio_path, merged_video_path)
+            current_merged_video_filename = merged_filename
 
             print("\n=== Processing completed successfully! ===")
             return redirect('/view')
@@ -131,15 +142,19 @@ def upload():
 
 @app.route('/view')
 def view():
-    global current_video_filename, current_title, current_description
+    global current_video_filename, current_merged_video_filename, current_title, current_description
     return render_template('lmsview.html', 
-                         video_filename=current_video_filename,
+                         video_filename=current_merged_video_filename or current_video_filename,
                          title=current_title or 'Untitled',
                          description=current_description or 'No description')
 
 @app.route('/video/<filename>')
 def serve_video(filename):
-    return send_from_directory(VIDEO_FOLDER, filename)
+    # Check video_output folder first (for merged videos), then original folder
+    if os.path.exists(os.path.join(VIDEO_OUTPUT_FOLDER, filename)):
+        return send_from_directory(VIDEO_OUTPUT_FOLDER, filename)
+    else:
+        return send_from_directory(VIDEO_FOLDER, filename)
 
 @app.route('/audio/<path:filename>')
 def serve_audio(filename):
