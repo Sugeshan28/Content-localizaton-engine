@@ -96,5 +96,7 @@ def upload():
     audiofromvideo(f"{VIDEO_FOLDER}/{filename}")
     textlantoaudio(texttolanguage(texttoaudio()))
 
+
+
 if __name__ == "__main__":
     app.run(debug=True)
