@@ -22,4 +22,4 @@ class TextlanToAudio:
 
         audio = output.squeeze().cpu().numpy()
         audio_16 = (audio*32767).astype('int16')
-        scipy.io.wavfile.write(f"{audio_path}/tamil", rate=model.config.sampling_rate, data=audio_16)
+        scipy.io.wavfile.write(f"db/audio/output_au/output_audio.wav", rate=model.config.sampling_rate, data=audio_16)

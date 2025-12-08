@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio - Upload Video</title>
-    <link rel="stylesheet" href="studio_upload.css">
+    <link rel="stylesheet" href="/static/css/upload.css">
 </head>
 <body>
 
@@ -18,7 +18,7 @@
             <div style="cursor:pointer">✕</div>
         </div>
 
-        <form action="/upload" method="POST" enctype="multipart/form-data" style="display:contents">
+        <form action="/" method="POST" enctype="multipart/form-data" style="display:contents">
             <div class="modal-content">
                 <!-- Left: Inputs -->
                 <div class="details-column">
@@ -107,6 +107,69 @@
             </div>
         </form>
     </div>
+<script>
+    // 1. Select the elements
+    const dropZone = document.querySelector('.main-video-upload');
+    const fileInput = document.getElementById('mainVideo');
+    const previewText = document.querySelector('.preview-info div:last-child');
+    const statusText = document.querySelector('.progress-status span');
 
+    // 2. Prevent default behavior (Stops browser from opening the file)
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // 3. Add visual cues (Change border color when dragging)
+    ['dragenter', 'dragover'].forEach(() => {
+        dropZone.style.border = '2px dashed #4CAF50'; // Green border
+        dropZone.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
+    });
+
+    ['dragleave', 'drop'].forEach(() => {
+        dropZone.style.border = ''; // Revert to original
+        dropZone.style.backgroundColor = '';
+    });
+
+    // 4. Handle the Drop Event
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+            // CRITICAL STEP: Assign dropped file to the hidden input
+            fileInput.files = files;
+
+            // Update UI (Reuse the logic you already have)
+            updateUI(files[0]);
+        }
+    }
+
+    // 5. Handle Click Selection (Your existing logic)
+    fileInput.addEventListener('change', function(e) {
+        if (this.files[0]) {
+            updateUI(this.files[0]);
+        }
+    });
+
+    // Common function to update texts
+    function updateUI(file) {
+        // Right side preview
+        previewText.innerText = file.name;
+        previewText.style.color = "#4CAF50";
+        
+        // Bottom status
+        statusText.innerText = "Ready to upload: " + file.name;
+        
+        // Left side upload box text
+        document.querySelector('.main-video-upload span:nth-child(2)').innerText = "Selected: " + file.name;
+    }
+</script>
 </body>
 </html>

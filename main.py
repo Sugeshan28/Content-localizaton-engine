@@ -4,7 +4,8 @@ from text_to_lan import TextToLan
 from textlan_to_audio import TextlanToAudio
 import os
 from datetime import datetime
-from flask import url_for,render_template,Flask
+from flask import url_for,render_template,Flask,request
+from werkzeug.utils import secure_filename
 
 #FUNCTION FOR LATEST AUDIO
 def recent_audio(audio_path = 'db/audio'):
@@ -19,37 +20,70 @@ def recent_audio(audio_path = 'db/audio'):
     print(f"File name {name}")
     return name
 
-#NAMING FUNCTION
-uplo = None
-def naming_file():
-    if uplo:
-        curr_file_name = uplo
-        timestamp = datetime.now().strftime(f"%m%d%y|%H.%M")
-        name = f"{timestamp}_{curr_file_name}"
+# #NAMING FUNCTION
+# uplo = None
+# def naming_file():
+#     if uplo:
+#         curr_file_name = uplo
+#         timestamp = datetime.now().strftime(f"%m%d%y|%H.%M")
+#         name = f"{timestamp}_{curr_file_name}"
 
-VIDEO_FOLDER = r"db\video\vid4.mp4"
-AUDIO_FOLDER = "db/audio"
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+VIDEO_FOLDER = os.path.join(BASE_DIR, 'db', 'video')
+AUDIO_FOLDER = os.path.join(BASE_DIR, 'db', 'audio')
 
-#AUDIOFROMVIDEO
-ext_audio = AudioFromVideo(VIDEO_FOLDER,AUDIO_FOLDER)
-audio_input = ext_audio.extracting_audio()
-#TEXT TO AUDIO
-ext_text = TextFromAudio(recent_audio())
-text_input = ext_text.extracting_text()
-print(f"Text output{ext_text.text}")
-#TEXT TO LANGUAGE
-source_lan = TextToLan(ext_text.text)
-translated_text = source_lan.eng_to_tamil()
-print(translated_text)
+os.makedirs(VIDEO_FOLDER, exist_ok=True)
+os.makedirs(AUDIO_FOLDER, exist_ok=True)
 
-to_audio = TextlanToAudio(source_lan.output_text)
-to_audio.tamil_audio_conv(recent_audio())
+def audiofromvideo():
+    #AUDIOFROMVIDEO
+    ext_audio = AudioFromVideo(VIDEO_FOLDER,AUDIO_FOLDER)
+    audio_input = ext_audio.extracting_audio()
+    return audio_input
+
+def texttoaudio():
+    #TEXT TO AUDIO
+    ext_text = TextFromAudio(recent_audio())
+    text_input = ext_text.extracting_text()
+    print(f"Text output{ext_text.text}")
+    return ext_text.text
+
+def texttolanguage(ext_text):
+    #TEXT TO LANGUAGE
+    source_lan = TextToLan(ext_text.text)
+    translated_text = source_lan.eng_to_tamil()
+    print(translated_text)
+
+def textlantoaudio(source_lan):
+    to_audio = TextlanToAudio(source_lan.output_text)
+    to_audio.tamil_audio_conv(recent_audio())
 
 app = Flask(__name__)
 
 @app.route('/')
-def upload_page():
+def index():
     return render_template('upload.html')
+
+@app.route("/", methods=['POST'])
+def upload():
+
+    if 'videoFile' not in request.files:
+        return "No file part"
+    
+    file = request.files['videoFile']
+
+    if file.filename == '':
+        return "No selected file"
+
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(VIDEO_FOLDER,filename))
+        print(f"Success! Video saved to: {VIDEO_FOLDER}/{filename}")
+    #initiating flow
+
+    audiofromvideo(f"{VIDEO_FOLDER}/{filename}")
+    texttolanguage(texttoaudio())
+    textlantoaudio()
 
 if __name__ == "__main__":
     app.run(debug=True)
