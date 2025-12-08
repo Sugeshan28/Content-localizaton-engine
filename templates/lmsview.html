@@ -86,7 +86,8 @@
               <video id="lessonVideo" class="lesson-video" controls poster="/static/images/placeholder.png">
     <!-- Jinja2 logic: "Go to the display_video function and get this specific filename" -->
                 <!-- This generates the URL: /display/my_movie.mp4 -->
-                    <source src="{{ url_for('viewcontent', filename=filename) }}" type="video/mp4">
+                    <source src="{{ url_for('serve_video', filename=video_filename) }}" type="video/mp4">
+
             </video>
             </div>
             <div class="video-meta">
@@ -95,6 +96,14 @@
                 Understand the core idea of learning from data with examples.
               </p>
             </div>
+            <div class="audio-section">
+    <h3>🎧 Translated Audio (Tamil)</h3>
+    <audio controls style="width: 100%;">
+        <source src="{{ url_for('serve_audio', filename='output_audio_ta.wav') }}" 
+                type="audio/wav">
+    </audio>
+</div>
+
           </div>
 
           <!-- Localization Controls -->

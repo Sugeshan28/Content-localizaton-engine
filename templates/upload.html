@@ -18,7 +18,7 @@
             <div style="cursor:pointer">✕</div>
         </div>
 
-        <form action="/" method="POST" enctype="multipart/form-data" style="display:contents">
+        <form action="/upload" method="POST" enctype="multipart/form-data" style="display:contents">
             <div class="modal-content">
                 <!-- Left: Inputs -->
                 <div class="details-column">
@@ -47,9 +47,34 @@
                         <textarea class="input-box" name="description" placeholder="Tell viewers about your video"></textarea>
                     </div>
 
+
+                    <!-- LANGUAGE SELECTION SECTION -->
+                    <div class="form-group">
+                        <label>🌐 Language Settings</label>
+                        <div class="language-row">
+                            <div>
+                                <label>Video Language</label>
+                                <select name="sourceLanguage" required>
+                                    <option value="en">English</option>
+                                    <option value="hi">Hindi</option>
+                                    <!-- 11+ languages -->
+                                </select>
+                            </div>
+                            <div>
+                                <label>Target Language</label>
+                                <select name="targetLanguage" required>
+                                    <option value="ta">Tamil</option>
+                                    <option value="hi">Hindi</option>
+                                    <!-- 12+ languages -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- LMS Specifics -->
                     <h3 class="section-title">LMS Processing</h3>
                     
+
                     <div class="input-group">
                         <label>Subtitles / Transcripts (SRT/VTT)</label>
                         <div class="upload-zone" onclick="document.getElementById('srtFile').click()">
