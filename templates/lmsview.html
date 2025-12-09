@@ -2,203 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LMS Portal with Content Localization</title>
+  <title>{{ video.title }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/static/css/lmsview.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/lmsview.css') }}" />
+  <link href="[https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap](https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap)" rel="stylesheet" />
 </head>
 <body>
     <div class="app-shell">
-    <!-- Sidebar -->
+    
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo-circle">L</div>
-                <div class="logo-text">
-                <h1>Content Localization</h1>
-                <p>Learn in your language</p>
-            </div>
+            <div class="logo-text"><h1>{{ t('sidebar_title') }}</h1></div>
         </div>
-
-      <!-- <div class="sidebar-section">
-        <h2 class="sidebar-title">My Courses</h2>
-        <ul class="course-list">
-          <li class="course-item active">
-            <span class="course-title">Intro to Machine Learning</span>
-            <span class="course-progress">12 / 24 lessons</span>
-          </li>
-          <li class="course-item">
-            <span class="course-title">Python for Data Science</span>
-            <span class="course-progress">8 / 18 lessons</span>
-          </li>
-          <li class="course-item">
-            <span class="course-title">Web Development Basics</span>
-            <span class="course-progress">3 / 15 lessons</span>
-          </li>
-          <li class="course-item">
-            <span class="course-title">Cloud Computing Essentials</span>
-            <span class="course-progress">0 / 20 lessons</span>
-          </li>
-        </ul>
-      </div> -->
-
-      <div class="sidebar-section">
-        <h2 class="sidebar-title">Profile</h2>
-        <div class="profile-card">
-          <div class="avatar-circle">S</div>
-          <div class="profile-info">
-            <p class="profile-name">Student User</p>
-            <p class="profile-meta">Level 3 • 65% complete</p>
-          </div>
+        <div class="sidebar-section">
+            <h2 class="sidebar-title">{{ t('profile_header') }}</h2>
+             <div class="profile-card">
+                <div class="avatar-circle">S</div>
+                <div class="profile-info"><p class="profile-name">Student</p></div>
+             </div>
         </div>
-      </div>
     </aside>
 
-    <!-- Main content -->
     <main class="main-content">
-      <!-- Top bar -->
       <header class="topbar">
         <div class="topbar-left">
-          <h2 class="page-title">Intro to Machine Learning</h2>
-          <p class="page-subtitle">Lesson 3 • Supervised vs Unsupervised</p>
+          <h2 class="page-title">{{ video.title }}</h2>
         </div>
         <div class="topbar-right">
-          <div class="pill">
-            <span class="pill-label">Interface Language</span>
-            <select id="uiLanguageSelect" class="pill-select">
-              <!-- Populated by JS -->
+            <select onchange="window.location.href='/set_language/'+this.value" class="pill-select">
+                <option value="en" {% if current_lang == 'en' %}selected{% endif %}>English</option>
+                <option value="ta" {% if current_lang == 'ta' %}selected{% endif %}>Tamil</option>
+                <option value="hi" {% if current_lang == 'hi' %}selected{% endif %}>Hindi</option>
+                <option value="te" {% if current_lang == 'te' %}selected{% endif %}>Telugu</option>
+                <option value="kn" {% if current_lang == 'kn' %}selected{% endif %}>Kannada</option>
             </select>
-          </div>
         </div>
       </header>
 
-      <!-- Video & localization -->
       <section class="content-layout">
         <div class="video-and-controls">
           <div class="video-card">
-            <div class="video-header">
-              <span class="badge badge-live">Video</span>
-              <span class="video-duration">24:15</span>
-            </div>
             <div class="video-wrapper">
-              <!-- Demo video element; replace src with your real video -->
-              <video id="lessonVideo" class="lesson-video" controls poster="/static/images/placeholder.png">
-    <!-- Jinja2 logic: "Go to the display_video function and get this specific filename" -->
-                <!-- This generates the URL: /display/my_movie.mp4 -->
-                    <source src="{{ url_for('serve_video', filename=video_filename) }}" type="video/mp4">
-
-            </video>
+              <video id="mainVideoPlayer" class="lesson-video" controls>
+                  <source src="{{ url_for('serve_video', filename=video.original_filename) }}" type="video/mp4">
+                  Your browser does not support the video tag.
+              </video>
+              
+              <!-- Hidden Audio Player for Dubbing -->
+              <audio id="dubbedAudio" style="display:none;">
+                  <source src="" type="audio/wav">
+              </audio>
             </div>
+            
             <div class="video-meta">
-              <p id="videoTitle" class="video-title">What is Machine Learning?</p>
-              <p id="videoSubTitle" class="video-subtitle">
-                Understand the core idea of learning from data with examples.
-              </p>
-            </div>
-            <div class="audio-section">
-                <h3>🎧 Translated Audio (Tamil)</h3>
-                <audio controls style="width: 100%;">
-                    <source src="{{ url_for('serve_audio', filename='output_audio_ta.wav') }}" 
-                            type="audio/wav">
-                </audio>
+              <p class="video-title">{{ video.title }}</p>
+              <p class="video-subtitle">{{ video.description }}</p>
             </div>
 
-          </div>
-
-          <!-- Localization Controls -->
-          <div class="localization-card">
-            <h3 class="section-title">Content Localization</h3>
-            <p class="section-subtitle">
-              Choose your preferred language for video audio, transcript, and captions.
-            </p>
-
-            <div class="localization-grid">
-              <div class="localization-control">
-                <label for="videoLanguageSelect">Video Audio Language</label>
-                <select id="videoLanguageSelect">
-                  <!-- Populated by JS -->
-                </select>
-                <p class="hint" id="videoLangHint">
-                  Currently set to <span class="accent" id="videoLangLabel">-</span>
-                </p>
-              </div>
-
-              <div class="localization-control">
-                <label for="captionLanguageSelect">Caption Language</label>
-                <select id="captionLanguageSelect">
-                  <!-- Populated by JS -->
-                </select>
-                <p class="hint" id="captionLangHint">
-                  Captions will display in <span class="accent" id="captionLangLabel">-</span>
-                </p>
-              </div>
-            </div>
-
-            <div class="localization-footer">
-              <button id="applyLocalizationBtn" class="primary-btn">
-                Apply Localization
-              </button>
-              <p class="tiny-note">
-                This demo updates the UI, transcript text, and sample description to match your selected languages.
-              </p>
+            <div style="margin-top: 20px; padding: 20px; background: #f0f7ff; border-radius: 12px; border: 1px solid #d2e3f5;">
+                <h3 style="margin:0 0 10px 0;">🎧 {{ t('trans_audio_title') }}</h3>
+                
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <label>{{ t('choose_audio_label') }}</label>
+                    
+                    <!-- Populated by JS -->
+                    <select id="audioSelector" style="padding:8px; border-radius:6px; min-width: 150px;">
+                        <option value="original">Original Audio</option>
+                    </select>
+                </div>
+                <p style="font-size:12px; color:#666; margin-top:5px;">* Audio will sync automatically with the video.</p>
             </div>
           </div>
         </div>
 
-        <!-- Tabs: Description / Transcript / Notes -->
         <div class="info-card">
           <div class="tabs">
-            <button class="tab-button active" data-tab="description">Description</button>
-            <button class="tab-button" data-tab="transcript">Transcript</button>
-            <button class="tab-button" data-tab="resources">Resources</button>
+            <button class="tab-button active">{{ t('tab_desc') }}</button>
           </div>
-
           <div class="tab-panels">
-            <div class="tab-panel active" id="tab-description">
-              <h3 class="panel-title">Lesson Overview</h3>
-              <p id="descriptionText">
-                This lesson introduces the basic idea of machine learning and how models learn patterns
-                from data. Use the localization settings on the left to view this description
-                in your preferred language.
-              </p>
-              <div class="language-chip-row">
-                <span class="chip">
-                  Description language:
-                  <strong id="descriptionLangChip">English (Default)</strong>
-                </span>
-              </div>
-            </div>
-
-
-            <div class="tab-panel" id="tab-resources">
-              <h3 class="panel-title">Additional Resources</h3>
-              <ul class="resource-list">
-                <li class="resource-item">
-                  <span class="resource-name">Slides (PDF)</span>
-                  <span class="resource-meta">Available in multiple languages (coming soon)</span>
-                </li>
-                <li class="resource-item">
-                  <span class="resource-name">Practice Quiz</span>
-                  <span class="resource-meta">Auto-adjusts hints based on UI language</span>
-                </li>
-                <li class="resource-item">
-                  <span class="resource-name">Further Reading</span>
-                  <span class="resource-meta">Blogs & docs on ML basics</span>
-                </li>
-              </ul>
+            <div class="tab-panel active">
+              <h3>Transcript</h3>
+              <p id="dynamicText" style="white-space: pre-wrap; line-height: 1.6;">{{ video.description }}</p>
             </div>
           </div>
         </div>
       </section>
-
-      <!-- Footer -->
-      <footer class="footer">
-        <p>© 2025 LMS Portal • Multi-language learning experience</p>
-      </footer>
     </main>
   </div>
 
-  <script src="app.js" defer></script>
+  <!-- THE BRIDGE: Pass Python Data to JavaScript Safely -->
+  <script>
+      // NOTE: We do NOT use quotes here. content_map is already a JSON string.
+      // This creates a valid JS Object.
+      window.VIDEO_CONTENT_MAP = {{ content_map | safe }};
+      
+      // Use backticks for description to handle multi-line strings
+      window.ORIGINAL_DESCRIPTION = `{{ video.description }}`;
+  </script>
+
+  <!-- External JS File -->
+  <script src="{{ url_for('static', filename='js/lmsview.js') }}"></script>
 </body>
 </html>

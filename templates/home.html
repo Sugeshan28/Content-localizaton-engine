@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <title>{{ t('nav_home') }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<header class="header">
+    <h1 class="logo">MyLMS</h1>
+    <nav>
+        <select onchange="window.location.href='/set_language/'+this.value" ... >
+            <option value="en" {% if current_lang == 'en' %}selected{% endif %}>English</option>
+            <option value="ta" {% if current_lang == 'ta' %}selected{% endif %}>தமிழ் (Tamil)</option>
+            <option value="hi" {% if current_lang == 'hi' %}selected{% endif %}>हिंदी (Hindi)</option>
+            <option value="te" {% if current_lang == 'te' %}selected{% endif %}>తెలుగు (Telugu)</option>
+        </select>
+
+
+    <a href="/">{{ t('nav_home') }}</a>
+    <a href="/upload">{{ t('nav_upload') }}</a>
+    <a href="/image_translate">Image Translate</a> <a href="/login" class="nav-btn login-btn">{{ t('nav_login') }}</a>
+</nav>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-text">
+        <h2>{{ t('hero_title') }}</h2>
+        <p>{{ t('hero_desc') }}</p>
+        <a href="#" class="hero-button">{{ t('btn_start') }}</a>
+    </div>
+    <img src="https://tse2.mm.bing.net/th/id/OIP.1mMDQwGyCOO8faVeTn6eXQHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" class="hero-img">
+</section>
+
+<h2 class="section-title">{{ t('pop_courses') }}</h2>
+
+<div class="course-container" style="display: flex; flex-wrap: wrap; gap: 20px;">
+    {% for video in videos %}
+    <div class="course-card" style="width: 300px;">
+        <img src="https://via.placeholder.com/300x200?text={{ video.title[:1] }}" class="course-img">
+        <h3>{{ video.title }}</h3>
+        <p class="course-description" style="font-size:13px; color:#666; height: 50px; overflow:hidden;">
+            {{ video.description }}
+        </p>
+        <p class="course-meta">{{ t('generated_date') }} {{ video.timestamp[:10] }}</p>
+        <a href="/view/{{ video.id }}" class="btn">{{ t('btn_learn') }}</a>
+    </div>
+    {% endfor %}
+
+    {% if not videos %}
+    <div style="padding: 20px; color: #666;">
+        {{ t('no_courses') }}
+    </div>
+    {% endif %}
+</div>
+
+<section class="about">
+    <h2>{{ t('why_choose') }}</h2>
+    <p>{{ t('why_desc') }}</p>
+
+    <div class="about-features">
+        <div class="feature-card">
+            <h3>{{ t('feat_1_title') }}</h3>
+            <p>{{ t('feat_1_desc') }}</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>{{ t('feat_2_title') }}</h3>
+            <p>{{ t('feat_2_desc') }}</p>
+        </div>
+
+        <div class="feature-card">
+            <h3>{{ t('feat_3_title') }}</h3>
+            <p>{{ t('feat_3_desc') }}</p>
+        </div>
+    </div>
+</section>
+
+<section class="reviews">
+    <h2>{{ t('reviews_title') }}</h2>
+    <div class="review-container">
+        <div class="review-card">
+            <p class="review-text">{{ t('review_1') }}</p>
+            <p class="review-author">— Priya S</p>
+        </div>
+        </div>
+</section>
+
+<div class="bottom-nav">
+    <div class="nav-left">
+        <p>{{ t('footer_text') }}</p>
+    </div>
+</div>
+
+</body>
+</html>

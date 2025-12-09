@@ -4,35 +4,50 @@ import scipy.io.wavfile
 import os
 
 class TextlanToAudio:
-    def __init__(self, input_tam, target_lang='ta'):
-        self.tamil_text = input_tam
+    def __init__(self, input_text, target_lang='ta'):
+        self.text = input_text
         self.target_lang = target_lang
         
-        # Language model mapping
+        # MMS-TTS Model Mapping
         self.model_map = {
-            'ta': 'facebook/mms-tts-tam',
-            'hi': 'facebook/mms-tts-hin',
-            'te': 'facebook/mms-tts-tel',
-            'bn': 'facebook/mms-tts-ben',
+            'ta': 'facebook/mms-tts-tam', # Tamil
+            'hi': 'facebook/mms-tts-hin', # Hindi
+            'te': 'facebook/mms-tts-tel', # Telugu
+            'kn': 'facebook/mms-tts-kan', # Kannada
+            'ml': 'facebook/mms-tts-mal', # Malayalam
+            'en': 'facebook/mms-tts-eng', # English
         }
     
-    def tamil_audio_conv(self, audio_path):
+    # ADDED unique_prefix to prevent file overwriting
+    def tamil_audio_conv(self, audio_path, unique_prefix="video"):
+        # Select the correct AI Model based on target language
         model_name = self.model_map.get(self.target_lang, 'facebook/mms-tts-tam')
-        
-        model = VitsModel.from_pretrained(model_name)
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
-        
-        text = self.tamil_text
-        inputs = tokenizer(text, return_tensors="pt")
-        
-        with torch.no_grad():
-            output = model(**inputs).waveform
-        
-        audio = output.squeeze().cpu().numpy()
-        audio_16 = (audio*32767).astype('int16')
-        
-        output_file = os.path.join(audio_path, f"output_audio_{self.target_lang}.wav")
-        scipy.io.wavfile.write(output_file, rate=model.config.sampling_rate, data=audio_16)
-        
-        print(f"Audio saved to: {output_file}")
-        return output_file
+        print(f"🎤 Generating Audio for {self.target_lang}...")
+
+        try:
+            model = VitsModel.from_pretrained(model_name)
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+            
+            # Input text
+            inputs = tokenizer(self.text, return_tensors="pt")
+            
+            with torch.no_grad():
+                output = model(**inputs).waveform
+            
+            audio = output.squeeze().cpu().numpy()
+            
+            # Save the file with a UNIQUE name
+            # e.g., "db/audio/output_au/12345_ta.wav"
+            filename = f"{unique_prefix}_{self.target_lang}.wav"
+            output_file = os.path.join(audio_path, filename)
+            
+            # Save as 16-bit PCM WAV (Standard format for browsers)
+            audio_16 = (audio * 32767).astype('int16')
+            scipy.io.wavfile.write(output_file, rate=model.config.sampling_rate, data=audio_16)
+            
+            print(f"✅ Audio saved: {filename}")
+            return output_file
+            
+        except Exception as e:
+            print(f"❌ TTS Error: {e}")
+            return None
