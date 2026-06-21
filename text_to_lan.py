@@ -1,77 +1,90 @@
 from transformers import pipeline
+import torch
+import gc
 
 class TextToLan:
-    def __init__(self, text: str, source_lang: str = 'en', target_lang: str = 'ta'):
-        self.text_input = text
+    def __init__(self, text=None, source_lang='en', target_lang='ta', model_pipeline=None):
+        """
+        Initialize the translator.
+        Can be used in two ways:
+        1. TextToLan(text, source_lang='en', target_lang='ta') - for immediate translation
+        2. TextToLan() - create instance, then call translate() method
+        """
+        self.text = text
         self.source_lang = source_lang
         self.target_lang = target_lang
-
+        self.pipe = model_pipeline
+        
         # NLLB-200 Language Codes
         self.lang_map = {
-            'en': 'eng_Latn',  # English
-            'ta': 'tam_Taml',  # Tamil
-            'hi': 'hin_Deva',  # Hindi
-            'te': 'tel_Telu',  # Telugu
-            'kn': 'kan_Knda',  # Kannada
-            'ml': 'mal_Mlym',  # Malayalam
-            'bn': 'ben_Beng',  # Bengali
-            'gu': 'guj_Gujr',  # Gujarati
-            'mr': 'mar_Deva',  # Marathi
+            'en': 'eng_Latn',
+            'ta': 'tam_Taml',
+            'hi': 'hin_Deva',
+            'kn': 'kan_Knda',
+            'ml': 'mal_Mlym',
+            'te': 'tel_Telu',
         }
 
+    def load_model(self):
+        """Loads the model only if it wasn't passed in"""
+        if self.pipe is None:
+            print("⏳ Loading Translation Model (NLLB)...")
+            device = 0 if torch.cuda.is_available() else -1
+            self.pipe = pipeline("translation", model="facebook/nllb-200-distilled-600M", device=device)
+
     def convert(self):
-        if not self.text_input: 
+        """
+        Translate text using parameters from __init__
+        Used for: translator = TextToLan(text, source_lang='en', target_lang='ta')
+                  result = translator.convert()
+        """
+        if not self.text:
             return ""
+        
+        return self.translate(self.text, self.source_lang, self.target_lang)
 
-        # Get codes (Default to English/Tamil if missing)
-        src_code = self.lang_map.get(self.source_lang, 'eng_Latn')
-        tgt_code = self.lang_map.get(self.target_lang, 'tam_Taml')
+    def translate(self, text, source_lang, target_lang):
+        """
+        Translate text with explicit parameters
+        Used for: translator = TextToLan()
+                  result = translator.translate(text, 'en', 'ta')
+        """
+        if not text:
+            return ""
+        
+        if self.pipe is None:
+            self.load_model()
 
-        print(f"🔀 Translating from {src_code} to {tgt_code}...")
+        src_code = self.lang_map.get(source_lang, 'eng_Latn')
+        tgt_code = self.lang_map.get(target_lang, 'tam_Taml')
 
         try:
-            # Load Translation Model
-            pipe = pipeline("translation", model="facebook/nllb-200-distilled-600M")
-            
-            # IMPORTANT: The model fails on long text. We must split it into chunks.
-            chunks = self._chunk_text(self.text_input)
+            # Chunking logic to prevent crash on long text
+            chunks = self._chunk_text(text)
             translated_parts = []
 
             for chunk in chunks:
                 if chunk.strip():
-                    result = pipe(chunk, src_lang=src_code, tgt_lang=tgt_code)
+                    # Pass src_lang and tgt_lang to the pipeline
+                    result = self.pipe(chunk, src_lang=src_code, tgt_lang=tgt_code)
                     translated_parts.append(result[0]['translation_text'])
             
-            # Combine all translated parts
-            final_text = " ".join(translated_parts)
-            return final_text
+            return " ".join(translated_parts)
 
         except Exception as e:
             print(f"Translation Error: {e}")
-            # Fallback: Return original text so the code doesn't crash
-            return self.text_input
+            return text
 
     def _chunk_text(self, text, max_len=400):
-        """
-        Splits long text into smaller chunks to prevent AI model crash.
-        Splits by periods (.) to keep sentences intact.
-        """
         sentences = text.split('.')
         chunks = []
         current_chunk = ""
-
         for sentence in sentences:
             if len(current_chunk) + len(sentence) < max_len:
                 current_chunk += sentence + "."
             else:
                 chunks.append(current_chunk)
                 current_chunk = sentence + "."
-        
         if current_chunk:
             chunks.append(current_chunk)
-            
         return chunks
-
-    # Alias for backward compatibility with your older code calls
-    def eng_to_tamil(self):
-        return self.convert()

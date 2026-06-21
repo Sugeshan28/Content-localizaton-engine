@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Document Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+    <style>
+        .pdf-card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 500px; 
+            margin: 50px auto; 
+            text-align: center; 
+        }
+        .loader { display: none; margin-top: 15px; color: #666; font-size: 0.9em; }
+    </style>
+    <script>
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('submitBtn').innerText = 'Processing (Opening Word...)...';
+        }
+    </script>
+</head>
+<body>
+    
+    <div class="pdf-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="margin:0; color:#1a73e8;">📄 PDF Translator</h2>
+            <div style="cursor:pointer; font-size:20px;" onclick="window.location.href='/'">✕</div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" onsubmit="showLoader()">
+            
+            <div class="upload-zone" onclick="document.getElementById('pdfInput').click()">
+                <span style="font-size:30px;">📂</span>
+                <div>Click to select PDF</div>
+                <input type="file" id="pdfInput" name="file" accept=".pdf" hidden required onchange="document.getElementById('fname').innerText = this.files[0].name">
+                <p id="fname" style="font-size:12px; color:green; margin-top:5px;"></p>
+            </div>
+            <br>
+
+            <label style="text-align: left; display: block; margin-bottom: 5px; font-weight: bold; color:#002d5b;">Target Language:</label>
+            <select name="language" class="input-box">
+                {% for lang in languages %}
+                <option value="{{ lang }}">{{ lang }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            
+            <button type="submit" id="submitBtn" class="btn-primary" style="width:100%">Upload & Translate</button>
+            
+            <div id="loader" class="loader">
+                Converting layout & translating...<br>
+                <small>(MS Word will open in background)</small>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -1,119 +1,148 @@
-/* ======================================================
-   LMS THEME VARIABLES
-===================================================== */
-:root {
-    --bg-main: #e9f4ff;
-    --bg-card: #ffffff;
-    --bg-soft: #f5f9ff;
-    --primary: #2b7cdd;
-    --text-main: #12324a;
-    --text-soft: #5b6e84;
-    --border-subtle: #d2e3f5;
-    --shadow-soft: 0 12px 25px rgba(15, 59, 112, 0.12);
-    --radius-lg: 18px;
-    --radius-xl: 24px;
-}
-
-* { box-sizing: border-box; }
-
+/* General Modal Styles */
 body {
-    font-family: "Poppins", sans-serif;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7fc;
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: radial-gradient(circle at top left, #f5fbff, var(--bg-main), #c7e1ff);
-    color: var(--text-main);
+    height: 100vh;
 }
 
-/* MODAL LAYOUT */
 .modal {
-    width: 960px;
-    height: 90vh;
-    background: var(--bg-card);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-soft);
-    display: flex; /* Critical for sticky footer */
-    flex-direction: column; /* Stack items vertically */
+    background: white;
+    width: 900px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
-    padding: 18px 28px;
-    background: linear-gradient(135deg, #ffffff, #dcecff);
-    border-bottom: 1px solid var(--border-subtle);
+    padding: 20px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0; /* Prevent header from shrinking */
+    border-bottom: 1px solid #eee;
 }
 
-/* CONTENT AREA (SCROLLABLE) */
+.modal-header h2 {
+    margin: 0;
+    color: #002d5b;
+    font-size: 20px;
+}
+
 .modal-content {
     display: flex;
-    flex: 1; /* Takes up all remaining space */
-    overflow: hidden; /* Prevents double scrollbars */
+    padding: 30px;
+    gap: 30px;
 }
 
 .details-column {
-    flex: 1;
-    padding: 28px;
-    background: var(--bg-card);
-    border-right: 1px solid var(--border-subtle);
-    overflow-y: auto; /* ENABLE SCROLLING HERE */
-    height: 100%;
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .preview-column {
-    width: 300px;
-    padding: 22px;
-    background: var(--bg-soft);
-    flex-shrink: 0;
-}
-
-/* INPUTS */
-.input-group { margin-bottom: 20px; }
-.input-group label {
-    font-size: 13px; font-weight: 500; display: block; margin-bottom: 6px;
-}
-.input-box, select, textarea {
-    width: 100%; padding: 12px; background: var(--bg-soft);
-    border-radius: var(--radius-lg); border: 1px solid var(--border-subtle);
-    font-family: inherit;
-}
-
-/* UPLOAD ZONES */
-.upload-zone {
-    border: 2px dashed var(--border-subtle);
-    border-radius: var(--radius-lg);
-    background: var(--bg-soft);
-    padding: 20px; text-align: center; cursor: pointer;
-    transition: 0.2s;
-}
-.upload-zone:hover { border-color: var(--primary); background: #fff; }
-
-/* FOOTER (STICKY BUTTON) */
-.modal-footer {
-    padding: 18px 22px;
-    border-top: 1px solid var(--border-subtle);
-    background: var(--bg-card);
+    flex: 1;
+    border-left: 1px solid #eee;
+    padding-left: 30px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* INPUT FIELDS - The Design You Asked For */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #002d5b;
+}
+
+/* This makes the text inside textboxes BLACK */
+.input-box {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dcebfb; /* Light blue border */
+    background-color: #f8fbff; /* Very light blue background */
+    border-radius: 8px;
+    font-size: 14px;
+    color: #000000; /* FORCE BLACK TEXT */
+    outline: none;
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* Ensures padding doesn't break width */
+}
+
+/* When you click the box, it turns white */
+.input-box:focus {
+    background-color: #ffffff;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+/* Dropdown Styling */
+select.input-box {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 15px;
+    cursor: pointer;
+}
+
+/* Upload Zone */
+.upload-zone {
+    border: 2px dashed #dcebfb;
+    border-radius: 12px;
+    background: #f8fbff;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    flex-shrink: 0; /* Ensure footer stays visible */
-    z-index: 10;
+    cursor: pointer;
+    transition: 0.3s;
+    color: #666;
+}
+
+.upload-zone:hover {
+    border-color: #2196f3;
+    background: #e3f2fd;
+}
+
+/* Buttons */
+.modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .btn-primary {
-    padding: 12px 32px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #2b7cdd, #51b9ff);
-    color: #fff;
+    background: #2196f3;
+    color: white;
     border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
     font-weight: 600;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(43, 124, 221, 0.3);
+    box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
 }
-.btn-primary:hover { transform: translateY(-2px); }
-.btn-primary:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+.btn-primary:hover {
+    background: #1976d2;
+}
+
+/* Placeholder text color */
+::placeholder {
+    color: #aab8c5;
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Text Translation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+        }
+        
+        .translation-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .translation-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .box-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .output-text {
+            background: white;
+            min-height: 200px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .btn-container {
+            text-align: center;
+        }
+        
+        .translate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .translate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .translate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .translation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+        
+        <h1>🌐 Text Translation</h1>
+        <p class="subtitle">Translate text between multiple Indian languages</p>
+        
+        <form method="POST">
+            <div class="translation-grid">
+                <!-- Source Text -->
+                <div class="translation-box">
+                    <div class="box-header">
+                        <span class="box-title">Source Text</span>
+                        <select name="sourceLanguage" required>
+                            <option value="en" {% if source_lang == 'en' %}selected{% endif %}>English</option>
+                            <option value="ta" {% if source_lang == 'ta' %}selected{% endif %}>Tamil</option>
+                            <option value="hi" {% if source_lang == 'hi' %}selected{% endif %}>Hindi</option>
+                            <option value="te" {% if source_lang == 'te' %}selected{% endif %}>Telugu</option>
+                            <option value="kn" {% if source_lang == 'kn' %}selected{% endif %}>Kannada</option>
+                            <option value="ml" {% if source_lang == 'ml' %}selected{% endif %}>Malayalam</option>
+                        </select>
+                    </div>
+                    <textarea name="sourceText" placeholder="Enter text to translate..." required>{{ source_text if source_text else '' }}</textarea>
+                </div>
+                
+                <!-- Translated Text -->
+                <div class="translation-box">
+                    <div class="box-header">
+                        <span class="box-title">Translated Text</span>
+                        <select name="targetLanguage" required>
+                            <option value="ta" {% if target_lang == 'ta' %}selected{% endif %}>Tamil</option>
+                            <option value="hi" {% if target_lang == 'hi' %}selected{% endif %}>Hindi</option>
+                            <option value="te" {% if target_lang == 'te' %}selected{% endif %}>Telugu</option>
+                            <option value="kn" {% if target_lang == 'kn' %}selected{% endif %}>Kannada</option>
+                            <option value="ml" {% if target_lang == 'ml' %}selected{% endif %}>Malayalam</option>
+                            <option value="en" {% if target_lang == 'en' %}selected{% endif %}>English</option>
+                        </select>
+                    </div>
+                    <div class="output-text">
+                        {% if translated_text %}
+                            {{ translated_text }}
+                        {% else %}
+                            Translation will appear here...
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button type="submit" class="translate-btn">Translate Text</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

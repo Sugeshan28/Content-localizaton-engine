@@ -19,10 +19,15 @@
             <option value="te" {% if current_lang == 'te' %}selected{% endif %}>తెలుగు (Telugu)</option>
         </select>
 
+    <a href="/">{{ t('nav_home') }}</a>
 
+    
+    
     <a href="/">{{ t('nav_home') }}</a>
     <a href="/upload">{{ t('nav_upload') }}</a>
     <a href="/image_translate">Image Translate</a> <a href="/login" class="nav-btn login-btn">{{ t('nav_login') }}</a>
+    <a href="/pdf_translate" style="color: #d32f2f; font-weight: bold;">PDF Translate</a>
+    <a href="/text-to-text" class="nav-btn login-btn">{{ t('nav_login') }}</a>
 </nav>
     </nav>
 </header>

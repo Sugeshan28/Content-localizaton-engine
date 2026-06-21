@@ -10,14 +10,13 @@ class TextlanToAudio:
         
         # MMS-TTS Model Mapping
         self.model_map = {
-            'ta': 'facebook/mms-tts-tam', # Tamil
-            'hi': 'facebook/mms-tts-hin', # Hindi
-            'te': 'facebook/mms-tts-tel', # Telugu
-            'kn': 'facebook/mms-tts-kan', # Kannada
-            'ml': 'facebook/mms-tts-mal', # Malayalam
-            'en': 'facebook/mms-tts-eng', # English
+            'ta': 'facebook/mms-tts-tam',
+            'hi': 'facebook/mms-tts-hin',
+            'kn': 'facebook/mms-tts-kan',
+            'ml': 'facebook/mms-tts-mal',
+            'en': 'facebook/mms-tts-eng'
         }
-    
+
     # ADDED unique_prefix to prevent file overwriting
     def tamil_audio_conv(self, audio_path, unique_prefix="video"):
         # Select the correct AI Model based on target language
